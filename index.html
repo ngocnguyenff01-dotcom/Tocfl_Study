@@ -349,22 +349,6 @@
                     <option value="Cá nhân">Từ tự thêm</option>
                 </select>
             </div>
-                <button onclick="toggleGrammarQuizMode()" id="btn-grammar-quiz" class="px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 text-xs sm:text-sm font-semibold transition flex items-center gap-2">
-                    <i class="fa-solid fa-eye-slash"></i>
-                    <span>Tự Kiểm Tra: TẮT</span>
-                </button>
-            </div>
-            <div id="grammar-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </section>
-
-        <!-- TAB 3: SỔ TAY -->
-        <section id="view-vocab-list" class="hidden space-y-4">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" id="search-vocab-input" onkeyup="renderVocabTable()" placeholder="Tìm chữ Phồn thể, Pinyin hoặc nghĩa..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-            </div>
 
             <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="overflow-x-auto">
@@ -960,7 +944,49 @@
                 return matchText && matchLevel;
             });
 
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 text-sm">Không tìm thấy từ vựng phù hợp.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = list.map(v => `
+                <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-2">
+                            <span class="font-tc font-bold text-lg text-slate-900">${v.hanzi}</span>
+                            <button onclick="speakText('${v.hanzi.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 p-1">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-medium text-blue-600 text-xs sm:text-sm">${v.pinyin}</div>
+                        <div class="font-tc text-[11px] text-slate-400">${v.zhuyin || ''}</div>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-slate-700">${v.meaning}</td>
+                    <td class="py-3 px-4">
+                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">${v.lesson}</span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="toggleVocabStatusFromTable(${v.id})" class="text-xs font-semibold px-2.5 py-1 rounded-full transition ${v.status === 'mastered' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                            ${v.status === 'mastered' ? 'Đã thuộc' : 'Đang học'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleVocabStatusFromTable(id) {
+            const item = vocabList.find(v => v.id === id);
+            if (item) {
+                item.status = item.status === 'mastered' ? 'learning' : 'mastered';
+                saveToLocalStorage();
+                updateStats();
+                renderVocabTable();
+                filterFlashcards();
+            }
+        }
+
         function renderRoadmap() {
             const container = document.getElementById('roadmap-stages');
             container.innerHTML = roadmapData.map((stage, sIdx) => {
