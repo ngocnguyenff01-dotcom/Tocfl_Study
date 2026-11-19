@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TOCFL Study Hub | 時代華語 1 → B1</title>
+    <!-- Cấu hình hiển thị như App trên điện thoại (iOS & Android) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TOCFL Hub">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter cho tiếng Việt & Noto Sans TC cho chữ Phồn thể Đài Loan -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tc: ['"Noto Sans TC"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Header & TOCFL B1 Progress Tracker -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 sm:py-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <!-- Logo & Tiêu đề -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-tc font-bold text-xl shadow-md">
+                        華
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-bold text-lg sm:text-xl text-slate-900">TOCFL Study Hub</h1>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                時代華語 1
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500">Tự động lưu trên máy • <strong class="text-blue-600">A1</strong> → <strong class="text-emerald-600">B1</strong></p>
+                    </div>
+                </div>
+
+                <!-- Nút Thao tác nhanh -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openAddModal('vocab')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Từ vựng</span>
+                    </button>
+                    <button onclick="openAddModal('grammar')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Ngữ pháp</span>
+                    </button>
+                    <button onclick="openBackupModal()" title="Sao lưu & Cài đặt App" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex items-center justify-center transition">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Thanh Tiến Độ Lộ Trình TOCFL A1 -> B1 -->
+            <div class="mt-3 pt-3 border-t border-slate-100">
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-medium text-slate-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-flag-checkered text-blue-600"></i>
+                        Tiến độ tích lũy hướng tới TOCFL B1
+                    </span>
+                    <span id="overall-percent" class="font-bold text-blue-700">12%</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex relative">
+                    <div id="overall-progress-bar" class="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 12%;"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-medium">
+                    <span class="text-blue-600 font-semibold">● 時代華語 1 (A1)</span>
+                    <span>時代華語 2 (A2)</span>
+                    <span class="text-emerald-600 font-semibold">時代華語 3 (TOCFL B1)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5">
+        
+        <!-- Thống kê nhanh -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Từ vựng đã thuộc</span>
+                    <i class="fa-solid fa-layer-group text-blue-500"></i>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-slate-800">
+                    <span id="stat-vocab-mastered">0</span><span class="text-sm font-normal text-slate-400">/<span id="stat-vocab-total">0</span></span>
+                </div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Ngữ pháp nắm vững</span>
+                    <i class="fa-solid fa-puzzle-piece text-emerald-500"></i>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-slate-800">
+                    <span id="stat-grammar-mastered">0</span><span class="text-sm font-normal text-slate-400">/<span id="stat-grammar-total">0</span></span>
+                </div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Giáo trình</span>
+                    <i class="fa-solid fa-book-open text-amber-500"></i>
+                </div>
+                <div class="text-base sm:text-lg font-bold text-slate-800 truncate">時代華語 1</div>
+                <div class="text-[11px] text-slate-400">Chữ Phồn thể</div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Lưu trữ cục bộ</span>
+                    <i class="fa-solid fa-cloud-check text-emerald-500"></i>
+                </div>
+                <div class="text-sm sm:text-base font-bold text-emerald-600 mt-1">Đã kích hoạt</div>
+                <div class="text-[11px] text-slate-400">Tự động lưu tiến độ</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex items-center gap-2 bg-slate-200/70 p-1.5 rounded-2xl mb-6 overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('flashcards')" id="tab-btn-flashcards" class="flex-1 min-w-[115px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 bg-white text-blue-700 shadow-sm">
+                <i class="fa-solid fa-clone"></i>
+                <span>Flashcard</span>
+            </button>
+            <button onclick="switchTab('grammar')" id="tab-btn-grammar" class="flex-1 min-w-[115px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-sitemap"></i>
+                <span>Ngữ Pháp</span>
+            </button>
+            <button onclick="switchTab('vocab-list')" id="tab-btn-vocab-list" class="flex-1 min-w-[115px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Sổ Tay</span>
+            </button>
+            <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="flex-1 min-w-[125px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-route"></i>
+                <span>Lộ Trình B1</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: FLASHCARD -->
+        <section id="view-flashcards" class="space-y-5">
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <select id="fc-lesson-filter" onchange="filterFlashcards()" class="text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Tất cả lộ trình (A1 → B1)</option>
+                        <optgroup label="時代華語 1 (TOCFL A1)">
+                            <option value="A1 - Bài 1-4">A1 • Bài 1–4: Chào hỏi & Gia đình</option>
+                            <option value="A1 - Bài 5-8">A1 • Bài 5–8: Thời gian & Mua sắm</option>
+                            <option value="A1 - Bài 9-12">A1 • Bài 9–12: Ăn uống & Giao thông</option>
+                            <option value="A1 - Bài 13-16">A1 • Bài 13–16: Thời tiết & Sinh hoạt</option>
+                        </optgroup>
+                        <optgroup label="Nâng cao (TOCFL A2 → B1)">
+                            <option value="A2 - 時代華語 2">A2 • 時代華語 2 (Sơ cấp)</option>
+                            <option value="B1 - 時代華語 3">B1 • 時代華語 3 (Trung cấp)</option>
+                        </optgroup>
+                        <option value="Cá nhân">Từ vựng tự thêm</option>
+                    </select>
+
+                    <select id="fc-status-filter" onchange="filterFlashcards()" class="text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="learning">Cần ôn tập</option>
+                        <option value="mastered">Đã thuộc</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3 text-xs font-medium">
+                    <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                        <input type="checkbox" id="toggle-pinyin" checked onchange="renderCurrentCard()" class="rounded text-blue-600">
+                        <span>Pinyin</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                        <input type="checkbox" id="toggle-zhuyin" checked onchange="renderCurrentCard()" class="rounded text-blue-600">
+                        <span>Chú âm (ㄅㄆㄇ)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="flashcard-stage" class="max-w-xl mx-auto">
+                <div class="flex items-center justify-between text-xs text-slate-500 mb-2 px-1">
+                    <span id="fc-counter">Thẻ 1 / 10</span>
+                    <span id="fc-badge" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">Đang học</span>
+                </div>
+
+                <div class="perspective-1000 w-full h-80 sm:h-96 cursor-pointer select-none" onclick="flipCard()">
+                    <div id="flashcard-inner" class="relative w-full h-full transform-style-3d">
+                        <!-- MẶT TRƯỚC -->
+                        <div class="absolute inset-0 backface-hidden bg-white rounded-3xl border-2 border-slate-200/90 shadow-lg p-6 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span id="fc-front-lesson" class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700">Bài 1</span>
+                                <button type="button" onclick="event.stopPropagation(); speakCurrentCard()" class="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition">
+                                    <i class="fa-solid fa-volume-high text-base"></i>
+                                </button>
+                            </div>
+
+                            <div class="text-center my-auto">
+                                <div id="fc-front-hanzi" class="font-tc text-5xl sm:text-6xl font-bold text-slate-900 tracking-wider mb-3">
+                                    臺灣
+                                </div>
+                                <div id="fc-front-phonetic" class="space-y-1">
+                                    <div id="fc-front-pinyin" class="text-lg sm:text-xl font-medium text-blue-600">Táiwān</div>
+                                    <div id="fc-front-zhuyin" class="font-tc text-sm text-slate-400">ㄊㄞˊ ㄨㄢ</div>
+                                </div>
+                            </div>
+
+                            <div class="text-center text-xs text-slate-400 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-rotate"></i>
+                                <span>Chạm vào thẻ để xem nghĩa</span>
+                            </div>
+                        </div>
+
+                        <!-- MẶT SAU -->
+                        <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl shadow-xl p-6 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span id="fc-back-pos" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-white/10 text-blue-300">Danh từ</span>
+                                <button type="button" onclick="event.stopPropagation(); speakCurrentCard()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                                    <i class="fa-solid fa-volume-high text-sm"></i>
+                                </button>
+                            </div>
+
+                            <div class="text-center my-auto space-y-3">
+                                <div id="fc-back-meaning" class="text-2xl sm:text-3xl font-bold text-emerald-400">
+                                    Đài Loan
+                                </div>
+                                
+                                <div class="bg-white/10 rounded-2xl p-3.5 text-left border border-white/10">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Ví dụ</span>
+                                        <button type="button" onclick="event.stopPropagation(); speakExample()" class="text-xs text-blue-300 hover:text-blue-200 flex items-center gap-1">
+                                            <i class="fa-solid fa-play"></i> Nghe câu
+                                        </button>
+                                    </div>
+                                    <p id="fc-back-ex-tc" class="font-tc text-base sm:text-lg font-medium text-white">歡迎你來臺灣！</p>
+                                    <p id="fc-back-ex-py" class="text-xs text-blue-300 mt-0.5">Huānyíng nǐ lái Táiwān!</p>
+                                    <p id="fc-back-ex-vi" class="text-xs text-slate-300 mt-1 italic">Chào mừng bạn đến Đài Loan!</p>
+                                </div>
+
+                                <div id="fc-back-note" class="text-xs text-amber-300/90 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20">
+                                    💡 Mẹo nhớ
+                                </div>
+                            </div>
+
+                            <div class="text-center text-[11px] text-slate-400">
+                                Đánh giá mức độ ghi nhớ bên dưới
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Điều hướng -->
+                <div class="mt-5 grid grid-cols-3 gap-2.5">
+                    <button onclick="rateCard('learning')" class="py-3 px-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs sm:text-sm transition flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                        <span>Chưa nhớ</span>
+                    </button>
+                    <button onclick="nextCard()" class="py-3 px-2 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs sm:text-sm transition flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-arrow-right text-base"></i>
+                        <span>Thẻ tiếp</span>
+                    </button>
+                    <button onclick="rateCard('mastered')" class="py-3 px-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-xs sm:text-sm transition flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-check text-base"></i>
+                        <span>Đã thuộc</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="flashcard-empty" class="hidden bg-white rounded-3xl border border-slate-200 p-10 text-center">
+                <h3 class="font-bold text-slate-800">Không tìm thấy thẻ nào</h3>
+                <p class="text-sm text-slate-500 mt-1">Thử đổi bộ lọc hoặc bấm nút "+ Từ vựng" phía trên.</p>
+            </div>
+        </section>
+
+        <!-- TAB 2: NGỮ PHÁP -->
+        <section id="view-grammar" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-bold text-slate-800 text-base">Cấu Trúc Ngữ Pháp (A1 → TOCFL B1)</h2>
+                    <p class="text-xs text-slate-500">Lọc theo cấp độ hoặc bật "Tự kiểm tra" để ẩn công thức và luyện nhớ chủ động.</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <select id="grammar-level-filter" onchange="renderGrammarList()" class="text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="all">Tất cả cấp độ (A1 → B1)</option>
+                        <option value="A1">A1 • 時代華語 1</option>
+                        <option value="A2">A2 • 時代華語 2</option>
+                        <option value="B1">B1 • 時代華語 3</option>
+                    </select>
+                    <button onclick="toggleGrammarQuizMode()" id="btn-grammar-quiz" class="px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 text-xs sm:text-sm font-semibold transition flex items-center gap-2">
+                        <i class="fa-solid fa-eye-slash"></i>
+                        <span>Tự Kiểm Tra: TẮT</span>
+                    </button>
+                </div>
+            </div>
+            <div id="grammar-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- TAB 3: SỔ TAY -->
+        <section id="view-vocab-list" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-vocab-input" onkeyup="renderVocabTable()" placeholder="Tìm chữ Phồn thể, Pinyin hoặc nghĩa..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <select id="table-level-filter" onchange="renderVocabTable()" class="text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="all">Tất cả cấp độ</option>
+                    <option value="A1">Cấp độ A1 (時代華語 1)</option>
+                    <option value="A2">Cấp độ A2 (時代華語 2)</option>
+                    <option value="B1">Cấp độ B1 (時代華語 3)</option>
+                    <option value="Cá nhân">Từ tự thêm</option>
+                </select>
+            </div>
+                <button onclick="toggleGrammarQuizMode()" id="btn-grammar-quiz" class="px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 text-xs sm:text-sm font-semibold transition flex items-center gap-2">
+                    <i class="fa-solid fa-eye-slash"></i>
+                    <span>Tự Kiểm Tra: TẮT</span>
+                </button>
+            </div>
+            <div id="grammar-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- TAB 3: SỔ TAY -->
+        <section id="view-vocab-list" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-vocab-input" onkeyup="renderVocabTable()" placeholder="Tìm chữ Phồn thể, Pinyin hoặc nghĩa..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+                                <th class="py-3 px-4">Phồn thể</th>
+                                <th class="py-3 px-4">Pinyin / Chú âm</th>
+                                <th class="py-3 px-4">Nghĩa</th>
+                                <th class="py-3 px-4">Bài</th>
+                                <th class="py-3 px-4 text-right">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vocab-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: LỘ TRÌNH A1 -> B1 -->
+        <section id="view-roadmap" class="hidden space-y-5">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-md">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full">Kế hoạch cá nhân hóa</span>
+                        <h2 class="text-xl sm:text-2xl font-bold mt-2">Lộ Trình Chinh Phục TOCFL B1 (Band B)</h2>
+                        <p class="text-xs sm:text-sm text-blue-100 mt-1">Bám sát bộ giáo trình <strong>時代華語 (A Course in Contemporary Chinese)</strong> từ quyển 1 đến quyển 3.</p>
+                    </div>
+                    <div class="bg-white/15 backdrop-blur-xs rounded-2xl p-3.5 text-center min-w-[130px] border border-white/20">
+                        <div class="text-xs text-blue-100">Mục tiêu từ vựng</div>
+                        <div class="text-2xl font-bold">2,500+</div>
+                        <div class="text-[11px] text-emerald-300 font-semibold">Chuẩn TOCFL Band B</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="roadmap-stages" class="space-y-4"></div>
+        </section>
+
+    </main>
+
+    <!-- MODAL THÊM TỪ VỰNG / NGỮ PHÁP -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="modal-title" class="font-bold text-lg text-slate-900">Thêm Từ Vựng Mới</h3>
+                <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="form-add-vocab" onsubmit="handleAddVocab(event)" class="space-y-3.5">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Chữ Phồn thể *</label>
+                        <input type="text" id="in-v-hanzi" required placeholder="VD: 珍珠奶茶" class="w-full px-3 py-2 border border-slate-200 rounded-xl font-tc text-base focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Bài học / Cấp độ</label>
+                        <select id="in-v-lesson" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="A1 - Bài 1-4">A1 • Bài 1–4 (時代華語 1)</option>
+                            <option value="A1 - Bài 5-8">A1 • Bài 5–8 (時代華語 1)</option>
+                            <option value="A1 - Bài 9-12">A1 • Bài 9–12 (時代華語 1)</option>
+                            <option value="A1 - Bài 13-16">A1 • Bài 13–16 (時代華語 1)</option>
+                            <option value="A2 - 時代華語 2">A2 • 時代華語 2</option>
+                            <option value="B1 - 時代華語 3">B1 • 時代華語 3</option>
+                            <option value="Cá nhân">Từ vựng tự thêm</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pinyin *</label>
+                        <input type="text" id="in-v-pinyin" required placeholder="VD: zhēnzhū nǎichá" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Chú âm (ㄅㄆㄇ)</label>
+                        <input type="text" id="in-v-zhuyin" placeholder="VD: ㄓㄣ ㄓㄨ ㄋㄞˇ ㄔㄚˊ" class="w-full px-3 py-2 border border-slate-200 rounded-xl font-tc text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nghĩa tiếng Việt *</label>
+                    <input type="text" id="in-v-meaning" required placeholder="VD: Trà sữa trân châu" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Câu ví dụ (Phồn thể)</label>
+                    <input type="text" id="in-v-example" placeholder="VD: 我喜歡喝珍珠奶茶。" class="w-full px-3 py-2 border border-slate-200 rounded-xl font-tc text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mẹo nhớ cá nhân</label>
+                    <input type="text" id="in-v-note" placeholder="VD: Đặc sản nổi tiếng ở Đài Loan" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100">Hủy</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm">Lưu lại</button>
+                </div>
+            </form>
+
+            <form id="form-add-grammar" onsubmit="handleAddGrammar(event)" class="space-y-3.5 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Công thức / Cấu trúc *</label>
+                    <input type="text" id="in-g-pattern" required placeholder="VD: S + 想 + V + O" class="w-full px-3 py-2 border border-slate-200 rounded-xl font-tc font-bold text-base text-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cấp độ / Bài</label>
+                        <input type="text" id="in-g-level" value="時代華語 1 (A1)" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Ý nghĩa cốt lõi *</label>
+                        <input type="text" id="in-g-meaning" required placeholder="VD: Muốn làm gì đó" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Giải thích & Lưu ý</label>
+                    <textarea id="in-g-explanation" rows="2" placeholder="VD: Dùng 想 trước động từ để diễn tả mong muốn..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Câu ví dụ mẫu (Phồn thể) *</label>
+                    <input type="text" id="in-g-ex-tc" required placeholder="VD: 我想去臺灣學中文。" class="w-full px-3 py-2 border border-slate-200 rounded-xl font-tc text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Dịch nghĩa ví dụ *</label>
+                    <input type="text" id="in-g-ex-vi" required placeholder="VD: Tôi muốn đi Đài Loan học tiếng Trung." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100">Hủy</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">Lưu Cấu Trúc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SAO LƯU & CÀI ĐẶT APP -->
+    <div id="backup-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg text-slate-900">Sao Lưu & Cài Đặt App</h3>
+                <button onclick="closeBackupModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3.5 text-xs text-blue-900 space-y-1.5">
+                <div class="font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-mobile-screen-button text-blue-600"></i>
+                    <span>Cách cài thành App trên điện thoại:</span>
+                </div>
+                <p>• <strong>iPhone (Safari):</strong> Bấm nút <strong>Chia sẻ (Share)</strong> ở dưới cùng → Chọn <strong>"Thêm vào MH chính" (Add to Home Screen)</strong>.</p>
+                <p>• <strong>Android (Chrome):</strong> Bấm dấu <strong>3 chấm</strong> góc trên → Chọn <strong>"Thêm vào màn hình chính"</strong>.</p>
+            </div>
+
+            <div class="space-y-2.5 pt-1">
+                <p class="text-xs text-slate-500">Dữ liệu hiện được lưu tự động trên trình duyệt này. Bạn có thể xuất file dự phòng để chuyển sang thiết bị khác:</p>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="exportData()" class="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Tải file sao lưu</span>
+                    </button>
+                    <label class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 cursor-pointer transition">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>Khôi phục file</span>
+                        <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Kho từ vựng cốt lõi xuyên suốt lộ trình A1 (時代華語 1) -> A2 (時代華語 2) -> B1 (時代華語 3)
+        const DEFAULT_VOCAB = [
+            // === A1: 時代華語 1 (Bài 1 - 4: Chào hỏi, Quốc tịch, Gia đình, Nghề nghiệp) ===
+            { id: 1, hanzi: "臺灣", pinyin: "Táiwān", zhuyin: "ㄊㄞˊ ㄨㄢ", pos: "Danh từ riêng", meaning: "Đài Loan", lesson: "A1 - Bài 1-4", exTc: "歡迎你來臺灣！", exPy: "Huānyíng nǐ lái Táiwān!", exVi: "Chào mừng bạn đến Đài Loan!", note: "Chữ 臺 là Phồn thể chuẩn dùng tại Đài Loan.", status: "mastered" },
+            { id: 2, hanzi: "歡迎", pinyin: "huānyíng", zhuyin: "ㄏㄨㄢ ㄧㄥˊ", pos: "Động từ", meaning: "Hoan nghênh, chào mừng", lesson: "A1 - Bài 1-4", exTc: "歡迎你們來我家玩。", exPy: "Huānyíng nǐmen lái wǒ jiā wán.", exVi: "Chào mừng các bạn đến nhà tôi chơi.", note: "Bên phải 歡 là bộ Khiếm (欠).", status: "mastered" },
+            { id: 3, hanzi: "請問", pinyin: "qǐngwèn", zhuyin: "ㄑㄧㄥˇ ㄨㄣˋ", pos: "Động từ", meaning: "Xin hỏi (lịch sự)", lesson: "A1 - Bài 1-4", exTc: "請問，你貴姓？", exPy: "Qǐngwèn, nǐ guìxìng?", exVi: "Xin hỏi, quý danh của bạn là gì?", note: "Luôn đặt ở đầu câu khi mở lời hỏi.", status: "learning" },
+            { id: 4, hanzi: "認識", pinyin: "rènshi", zhuyin: "ㄖㄣˋ ㄕˋ", pos: "Động từ", meaning: "Quen biết", lesson: "A1 - Bài 1-4", exTc: "認識你很高興。", exPy: "Rènshi nǐ hěn gāoxìng.", exVi: "Rất vui được quen biết bạn.", note: "Cả hai chữ đều có bộ Ngôn (言) bên trái.", status: "learning" },
+            { id: 5, hanzi: "家人", pinyin: "jiārén", zhuyin: "ㄐㄧㄚ ㄖㄣˊ", pos: "Danh từ", meaning: "Người nhà, gia đình", lesson: "A1 - Bài 1-4", exTc: "你家有幾個人？", exPy: "Nǐ jiā yǒu jǐ ge rén?", exVi: "Nhà bạn có mấy người?", note: "Chữ 家 gồm bộ Miên ở trên (mái nhà).", status: "learning" },
+            { id: 6, hanzi: "工作", pinyin: "gōngzuò", zhuyin: "ㄍㄨㄥ ㄗㄨㄛˋ", pos: "Danh từ / Động từ", meaning: "Công việc, làm việc", lesson: "A1 - Bài 1-4", exTc: "你在哪裡工作？", exPy: "Nǐ zài nǎlǐ gōngzuò?", exVi: "Bạn làm việc ở đâu?", note: "Có thể dùng làm danh từ hoặc động từ.", status: "learning" },
+            { id: 7, hanzi: "學生", pinyin: "xuéshēng", zhuyin: "ㄒㄩㄝˊ ㄕㄥ", pos: "Danh từ", meaning: "Học sinh, sinh viên", lesson: "A1 - Bài 1-4", exTc: "我是大學生。", exPy: "Wǒ shì dàxuéshēng.", exVi: "Tôi là sinh viên đại học.", note: "Chữ 學 phần trên có bộ Cữu ôm chữ Hào.", status: "learning" },
+            { id: 8, hanzi: "喜歡", pinyin: "xǐhuān", zhuyin: "ㄒㄧˇ ㄏㄨㄢ", pos: "Động từ", meaning: "Thích", lesson: "A1 - Bài 1-4", exTc: "我喜歡學中文。", exPy: "Wǒ xǐhuān xué Zhōngwén.", exVi: "Tôi thích học tiếng Trung.", note: "喜歡 + Động từ / Danh từ.", status: "learning" },
+
+            // === A1: 時代華語 1 (Bài 5 - 8: Thời gian, Cuối tuần, Mua sắm, Giá cả) ===
+            { id: 9, hanzi: "週末", pinyin: "zhōumò", zhuyin: "ㄓㄡ ㄇㄛˋ", pos: "Danh từ thời gian", meaning: "Cuối tuần", lesson: "A1 - Bài 5-8", exTc: "你週末喜歡做什麼？", exPy: "Nǐ zhōumò xǐhuān zuò shénme?", exVi: "Cuối tuần bạn thích làm gì?", note: "Phân biệt 末 (mò - nét trên dài) với 未 (wèi).", status: "learning" },
+            { id: 10, hanzi: "現在", pinyin: "xiànzài", zhuyin: "ㄒㄧㄢˋ ㄗㄞˋ", pos: "Danh từ thời gian", meaning: "Bây giờ, hiện tại", lesson: "A1 - Bài 5-8", exTc: "請問現在幾點？", exPy: "Qǐngwèn xiànzài jǐ diǎn?", exVi: "Xin hỏi bây giờ là mấy giờ?", note: "Đặt trước hoặc sau chủ ngữ đều được.", status: "learning" },
+            { id: 11, hanzi: "多少錢", pinyin: "duōshǎo qián", zhuyin: "ㄉㄨㄛ ㄕㄠˇ ㄑㄧㄢˊ", pos: "Cụm từ hỏi", meaning: "Bao nhiêu tiền", lesson: "A1 - Bài 5-8", exTc: "這件衣服多少錢？", exPy: "Zhè jiàn yīfu duōshǎo qián?", exVi: "Bộ quần áo này bao nhiêu tiền?", note: "Đơn vị tiền tệ Đài Loan là 元 (yuán) hoặc 塊 (kuài).", status: "learning" },
+            { id: 12, hanzi: "便宜", pinyin: "piányi", zhuyin: "ㄆㄧㄢˊ ㄧˊ", pos: "Tính từ", meaning: "Rẻ", lesson: "A1 - Bài 5-8", exTc: "這個手機很便宜。", exPy: "Zhège shǒujī hěn piányi.", exVi: "Chiếc điện thoại này rất rẻ.", note: "Chữ 便 ở đây đọc là pián (không đọc biàn).", status: "learning" },
+            { id: 13, hanzi: "準備", pinyin: "zhǔnbèi", zhuyin: "ㄓㄨㄣˇ ㄅㄟˋ", pos: "Động từ", meaning: "Chuẩn bị", lesson: "A1 - Bài 5-8", exTc: "我正在準備考試。", exPy: "Wǒ zhèngzài zhǔnbèi kǎoshì.", exVi: "Tôi đang chuẩn bị cho kỳ thi.", note: "Chữ 備 có bộ Nhân đứng bên trái.", status: "learning" },
+            { id: 14, hanzi: "方便", pinyin: "fāngbiàn", zhuyin: "ㄈㄤ ㄅㄧㄢˋ", pos: "Tính từ", meaning: "Thuận tiện, tiện lợi", lesson: "A1 - Bài 5-8", exTc: "臺北的交通很方便。", exPy: "Táiběi de jiāotōng hěn fāngbiàn.", exVi: "Giao thông ở Đài Bắc rất thuận tiện.", note: "Cửa hàng tiện lợi ở Đài Loan gọi là 便利商店.", status: "learning" },
+
+            // === A1: 時代華語 1 (Bài 9 - 12: Ăn uống, Phương hướng, Giao thông) ===
+            { id: 15, hanzi: "點菜", pinyin: "diǎncài", zhuyin: "ㄉㄧㄢˇ ㄘㄞˋ", pos: "Động từ ly hợp", meaning: "Gọi món ăn", lesson: "A1 - Bài 9-12", exTc: "老闆，我們要點菜。", exPy: "Lǎobǎn, wǒmen yào diǎncài.", exVi: "Ông chủ ơi, chúng tôi muốn gọi món.", note: "Động từ ly hợp: 点 + số lượng + 菜.", status: "learning" },
+            { id: 16, hanzi: "好吃", pinyin: "hǎochī", zhuyin: "ㄏㄠˇ ㄔ", pos: "Tính từ", meaning: "Ngon (đồ ăn)", lesson: "A1 - Bài 9-12", exTc: "臺灣的牛肉麵真好吃！", exPy: "Táiwān de niúròumiàn zhēn hǎochī!", exVi: "Mì bò Đài Loan thật sự rất ngon!", note: "Đồ uống ngon dùng 好喝 (hǎohē).", status: "learning" },
+            { id: 17, hanzi: "捷運", pinyin: "jiéyùn", zhuyin: "ㄐㄧㄝˊ ㄩㄣˋ", pos: "Danh từ", meaning: "Tàu điện ngầm MRT (Đài Loan)", lesson: "A1 - Bài 9-12", exTc: "我每天搭捷運去學校。", exPy: "Wǒ měitiān dā jiéyùn qù xuéxiào.", exVi: "Mỗi ngày tôi đi tàu điện MRT đến trường.", note: "Ở Đài Loan dùng 搭捷運 (không dùng 坐地鐵).", status: "learning" },
+            { id: 18, hanzi: "附近", pinyin: "fùjìn", zhuyin: "ㄈㄨˋ ㄐㄧㄣˋ", pos: "Phương vị từ", meaning: "Gần đây, vùng lân cận", lesson: "A1 - Bài 9-12", exTc: "學校附近有很多小吃店。", exPy: "Xuéxiào fùjìn yǒu hěn duō xiǎochīdiàn.", exVi: "Gần trường học có rất nhiều quán ăn vặt.", note: "Danh từ + 附近 (ở gần nơi nào đó).", status: "learning" },
+            { id: 19, hanzi: "迷路", pinyin: "mílù", zhuyin: "ㄇㄧˊ ㄌㄨˋ", pos: "Động từ", meaning: "Lạc đường", lesson: "A1 - Bài 9-12", exTc: "第一次來這裡，我迷路了。", exPy: "Dì-yī cì lái zhèlǐ, wǒ mílù le.", exVi: "Lần đầu đến đây, tôi bị lạc đường rồi.", note: "迷 (mê muội, lạc) + 路 (đường).", status: "learning" },
+
+            // === A1: 時代華語 1 (Bài 13 - 16: Thời tiết, Sức khỏe, Sở thích, Du lịch) ===
+            { id: 20, hanzi: "天氣", pinyin: "tiānqì", zhuyin: "ㄊㄧㄢ ㄑㄧˋ", pos: "Danh từ", meaning: "Thời tiết", lesson: "A1 - Bài 13-16", exTc: "今天的天氣很好。", exPy: "Jīntiān de tiānqì hěn hǎo.", exVi: "Thời tiết hôm nay rất đẹp.", note: "Chữ 氣 có chữ 米 ở bên trong.", status: "learning" },
+            { id: 21, hanzi: "感冒", pinyin: "gǎnmào", zhuyin: "ㄍㄢˇ ㄇㄠˋ", pos: "Động từ / Danh từ", meaning: "Bị cảm, cảm cúm", lesson: "A1 - Bài 13-16", exTc: "天氣變冷了，小心別感冒。", exPy: "Tiānqì biàn lěng le, xiǎoxīn bié gǎnmào.", exVi: "Thời tiết trở lạnh rồi, cẩn thận kẻo bị cảm.", note: "Thường đi kèm 看醫生 (đi khám bác sĩ).", status: "learning" },
+            { id: 22, hanzi: "運動", pinyin: "yùndòng", zhuyin: "ㄩㄣˋ ㄉㄨㄥˋ", pos: "Động từ / Danh từ", meaning: "Vận động, thể thao", lesson: "A1 - Bài 13-16", exTc: "多運動對身體很好。", exPy: "Duō yùndòng duì shēntǐ hěn hǎo.", exVi: "Vận động nhiều rất tốt cho sức khỏe.", note: "Cả 2 chữ đều có nét phồn thể nhiều nét.", status: "learning" },
+            { id: 23, hanzi: "旅行", pinyin: "lǚxíng", zhuyin: "ㄌㄩˇ ㄒㄧㄥˊ", pos: "Động từ / Danh từ", meaning: "Du lịch", lesson: "A1 - Bài 13-16", exTc: "暑假我想去花蓮旅行。", exPy: "Shǔjià wǒ xiǎng qù Huālián lǚxíng.", exVi: "Kỳ nghỉ hè tôi muốn đi Hoa Liên du lịch.", note: "Từ đồng nghĩa phổ biến: 旅遊 (lǚyóu).", status: "learning" },
+
+            // === A2: 時代華語 2 (Cấp độ Sơ cấp - Nền tảng lên B1) ===
+            { id: 24, hanzi: "經驗", pinyin: "jīngyàn", zhuyin: "ㄐㄧㄥ ㄧㄢˋ", pos: "Danh từ", meaning: "Kinh nghiệm", lesson: "A2 - 時代華語 2", exTc: "他有豐富的教學經驗。", exPy: "Tā yǒu fēngfù de jiàoxué jīngyàn.", exVi: "Anh ấy có kinh nghiệm giảng dạy phong phú.", note: "Chữ 驗 có bộ Mã (馬) bên trái.", status: "learning" },
+            { id: 25, hanzi: "決定", pinyin: "juédìng", zhuyin: "ㄐㄩㄝˊ ㄉㄧㄥˋ", pos: "Động từ / Danh từ", meaning: "Quyết định", lesson: "A2 - 時代華語 2", exTc: "我決定明年去臺灣留學。", exPy: "Wǒ juédìng míngnián qù Táiwān liúxué.", exVi: "Tôi quyết định năm sau đi Đài Loan du học.", note: "做決定 (đưa ra quyết định).", status: "learning" },
+            { id: 26, hanzi: "影響", pinyin: "yǐngxiǎng", zhuyin: "ㄧㄥˇ ㄒㄧㄤˇ", pos: "Động từ / Danh từ", meaning: "Ảnh hưởng", lesson: "A2 - 時代華語 2", exTc: "熬夜會影響身體健康。", exPy: "Áoyè huì yǐngxiǎng shēntǐ jiànkāng.", exVi: "Thức khuya sẽ ảnh hưởng đến sức khỏe.", note: "對...有影響 (có ảnh hưởng đối với...).", status: "learning" },
+            { id: 27, hanzi: "習慣", pinyin: "xíguàn", zhuyin: "ㄒㄧˊ ㄍㄨㄢˋ", pos: "Động từ / Danh từ", meaning: "Thói quen, quen với", lesson: "A2 - 時代華語 2", exTc: "我已經習慣臺灣的生活了。", exPy: "Wǒ yǐjīng xíguàn Táiwān de shēnghuó le.", exVi: "Tôi đã quen với cuộc sống ở Đài Loan rồi.", note: "好習慣 (thói quen tốt).", status: "learning" },
+            { id: 28, hanzi: "環境", pinyin: "huánjìng", zhuyin: "ㄏㄨㄢˊ ㄐㄧㄥˋ", pos: "Danh từ", meaning: "Môi trường", lesson: "A2 - 時代華語 2", exTc: "這裡的學習環境非常安靜。", exPy: "Zhèlǐ de xuéxí huánjìng fēicháng ānjìng.", exVi: "Môi trường học tập ở đây vô cùng yên tĩnh.", note: "保護環境 (bảo vệ môi trường).", status: "learning" },
+            { id: 29, hanzi: "了解", pinyin: "liǎojiě", zhuyin: "ㄌㄧㄠˇ ㄐㄧㄝˇ", pos: "Động từ", meaning: "Hiểu rõ, tìm hiểu", lesson: "A2 - 時代華語 2", exTc: "我想更了解臺灣的文化。", exPy: "Wǒ xiǎng gèng liǎojiě Táiwān de wénhuà.", exVi: "Tôi muốn hiểu rõ hơn về văn hóa Đài Loan.", note: "Chữ 了 ở đây đọc là liǎo (không đọc le).", status: "learning" },
+
+            // === B1: 時代華語 3 (Cấp độ Trung cấp - Mục tiêu TOCFL B1) ===
+            { id: 30, hanzi: "競爭", pinyin: "jìngzhēng", zhuyin: "ㄐㄧㄥˋ ㄓㄥ", pos: "Động từ / Danh từ", meaning: "Cạnh tranh", lesson: "B1 - 時代華語 3", exTc: "現代社會的競爭越來越激烈。", exPy: "Xiàndài shèhuì de jìngzhēng yuèláiyuè jīliè.", exVi: "Sự cạnh tranh của xã hội hiện đại ngày càng khốc liệt.", note: "Từ khóa tần suất cao trong đề đọc hiểu TOCFL B1.", status: "learning" },
+            { id: 31, hanzi: "效率", pinyin: "xiàolǜ", zhuyin: "ㄒㄧㄠˋ ㄌㄩˋ", pos: "Danh từ", meaning: "Hiệu suất, hiệu quả", lesson: "B1 - 時代華語 3", exTc: "用對方法可以提高學習效率。", exPy: "Yòng duì fāngfǎ kěyǐ tígāo xuéxí xiàolǜ.", exVi: "Dùng đúng phương pháp có thể nâng cao hiệu suất học tập.", note: "提高效率 (nâng cao hiệu suất).", status: "learning" },
+            { id: 32, hanzi: "壓力", pinyin: "yālì", zhuyin: "ㄧㄚ ㄌㄧˋ", pos: "Danh từ", meaning: "Áp lực", lesson: "B1 - 時代華語 3", exTc: "工作壓力太大的時候，應該放鬆一下。", exPy: "Gōngzuò yālì tài dà de shíhou, yīnggāi fàngsōng yíxià.", exVi: "Khi áp lực công việc quá lớn, nên thư giãn một chút.", note: "減輕壓力 (giảm bớt áp lực).", status: "learning" },
+            { id: 33, hanzi: "態度", pinyin: "tàidù", zhuyin: "ㄊㄞˋ ㄉㄨˋ", pos: "Danh từ", meaning: "Thái độ", lesson: "B1 - 時代華語 3", exTc: "積極的態度是成功的關鍵。", exPy: "Jījí de tàidù shì chénggōng de guānjiàn.", exVi: "Thái độ tích cực là chìa khóa của thành công.", note: "服務態度 (thái độ phục vụ).", status: "learning" },
+            { id: 34, hanzi: "畢竟", pinyin: "bìjìng", zhuyin: "ㄅㄧˋ ㄐㄧㄥˋ", pos: "Phó từ", meaning: "Suy cho cùng, dù sao thì", lesson: "B1 - 時代華語 3", exTc: "別太責怪他，他畢竟還是個新手。", exPy: "Bié tài zéguài tā, tā bìjìng háishì ge xīnshǒu.", exVi: "Đừng trách anh ấy quá, dù sao anh ấy vẫn là người mới.", note: "Phó từ ngữ khí rất hay xuất hiện trong phần Nghe & Đọc B1.", status: "learning" },
+            { id: 35, hanzi: "珍惜", pinyin: "zhēnxī", zhuyin: "ㄓㄣ ㄒㄧ", pos: "Động từ", meaning: "Trân trọng, quý trọng", lesson: "B1 - 時代華語 3", exTc: "我們應該珍惜時間和眼前的機會。", exPy: "Wǒmen yīnggāi zhēnxī shíjiān hé yǎnqián de jīhuì.", exVi: "Chúng ta nên trân trọng thời gian và cơ hội trước mắt.", note: "珍惜時間 (trân trọng thời gian).", status: "learning" }
+        ];
+
+        // Hệ thống ngữ pháp xuyên suốt A1 -> A2 -> B1
+        const DEFAULT_GRAMMAR = [
+            // === A1: 時代華語 1 ===
+            {
+                id: 101, pattern: "A + 是 + B / A + 不是 + B", level: "A1 • 時代華語 1 (Bài 1)",
+                meaning: "Câu khẳng định & phủ định với 'là'",
+                explanation: "Dùng để nối chủ ngữ và danh từ. Lưu ý: KHÔNG dùng 很 trước 是.",
+                exTc: "我不是美國人，我是越南人。", exPy: "Wǒ bú shì Měiguórén, wǒ shì Yuènánrén.",
+                exVi: "Tôi không phải người Mỹ, tôi là người Việt Nam.", mastered: true
+            },
+            {
+                id: 102, pattern: "Câu hỏi chính phản: V + 不 + V / Adj + 不 + Adj", level: "A1 • 時代華語 1 (Bài 2)",
+                meaning: "Câu hỏi Có... không?",
+                explanation: "Lặp lại động từ hoặc tính từ với 不 ở giữa. Khi dùng dạng này thì KHÔNG thêm 嗎 ở cuối câu.",
+                exTc: "你忙不忙？ / 你是不是老師？", exPy: "Nǐ máng bu máng? / Nǐ shì bu shì lǎoshī?",
+                exVi: "Bạn có bận không? / Bạn có phải là giáo viên không?", mastered: true
+            },
+            {
+                id: 103, pattern: "Chủ ngữ + Thời gian + 在 + Địa điểm + Động từ", level: "A1 • 時代華語 1 (Bài 4)",
+                meaning: "Trật tự từ chuẩn trong tiếng Trung",
+                explanation: "Thời gian và Địa điểm luôn đặt TRƯỚC hành động (ngược với tiếng Việt).",
+                exTc: "我週末在家看書。", exPy: "Wǒ zhōumò zài jiā kànshū.",
+                exVi: "Cuối tuần tôi đọc sách ở nhà.", mastered: false
+            },
+            {
+                id: 104, pattern: "A + 離 + B + 很近 / 很遠", level: "A1 • 時代華語 1 (Bài 8)",
+                meaning: "Diễn tả khoảng cách (A cách B gần/xa)",
+                explanation: "Dùng giới từ 離 để nói khoảng cách giữa hai địa điểm. Không dùng 很遠 với số đo cụ thể.",
+                exTc: "我家離捷運站很近。", exPy: "Wǒ jiā lí jiéyùnzhàn hěn jìn.",
+                exVi: "Nhà tôi cách trạm tàu điện MRT rất gần.", mastered: false
+            },
+            {
+                id: 105, pattern: "正在 + V + (呢)", level: "A1 • 時代華語 1 (Bài 11)",
+                meaning: "Diễn tả hành động đang diễn ra",
+                explanation: "Tương đương thì hiện tại tiếp diễn. Cuối câu thường có trợ từ 呢.",
+                exTc: "他正在聽音樂呢。", exPy: "Tā zhèngzài tīng yīnyuè ne.",
+                exVi: "Anh ấy đang nghe nhạc đấy.", mastered: false
+            },
+
+            // === A2: 時代華語 2 ===
+            {
+                id: 106, pattern: "因為...，所以...", level: "A2 • 時代華語 2",
+                meaning: "Bởi vì..., cho nên...",
+                explanation: "Biểu thị quan hệ nguyên nhân - kết quả. Có thể dùng cả cặp hoặc lược bỏ một vế.",
+                exTc: "因為明天要考試，所以我今天不能出去玩。", exPy: "Yīnwèi míngtiān yào kǎoshì, suǒyǐ wǒ jīntiān bù néng chūqù wán.",
+                exVi: "Bởi vì ngày mai phải thi, cho nên hôm nay tôi không thể ra ngoài chơi.", mastered: false
+            },
+            {
+                id: 107, pattern: "雖然...，可是 / 但是...", level: "A2 • 時代華語 2",
+                meaning: "Tuy rằng..., nhưng mà...",
+                explanation: "Biểu thị quan hệ chuyển ngoặt. Lưu ý: Trong tiếng Trung không dùng 雖然 đi chung với 所以.",
+                exTc: "雖然漢字很難，可是很有意思。", exPy: "Suīrán Hànzì hěn nán, kěshì hěn yǒuyìsi.",
+                exVi: "Tuy chữ Hán rất khó, nhưng mà rất thú vị.", mastered: false
+            },
+            {
+                id: 108, pattern: "V + 過 (guò)", level: "A2 • 時代華語 2",
+                meaning: "Đã từng làm gì (kinh nghiệm trong quá khứ)",
+                explanation: "Phủ định dùng 沒(有) + V + 過. Câu hỏi dùng V + 過 + ... + 沒有？",
+                exTc: "你去過臺南嗎？我沒去過。", exPy: "Nǐ qù guo Táinán ma? Wǒ méi qù guo.",
+                exVi: "Bạn đã từng đi Đài Nam chưa? Tôi chưa từng đi.", mastered: false
+            },
+            {
+                id: 109, pattern: "越來越 + Tính từ / Động từ tâm lý", level: "A2 • 時代華語 2",
+                meaning: "Ngày càng...",
+                explanation: "Diễn tả mức độ thay đổi tăng dần theo thời gian. Không thêm 很 trước tính từ.",
+                exTc: "我的中文說得越來越流利了。", exPy: "Wǒ de Zhōngwén shuō de yuèláiyuè liúlì le.",
+                exVi: "Tiếng Trung của tôi nói ngày càng lưu loát rồi.", mastered: false
+            },
+
+            // === B1: 時代華語 3 ===
+            {
+                id: 110, pattern: "Chủ ngữ + 把 + Tân ngữ + Động từ + Thành phần khác", level: "B1 • 時代華語 3",
+                meaning: "Câu chữ 把 (Xử lý đối tượng)",
+                explanation: "Nhấn mạnh hành động tác động làm thay đổi vị trí hoặc trạng thái của tân ngữ xác định.",
+                exTc: "請把桌上的資料整理好。", exPy: "Qǐng bǎ zhuōshàng de zīliào zhěnglǐ hǎo.",
+                exVi: "Vui lòng sắp xếp gọn gàng tài liệu trên bàn.", mastered: false
+            },
+            {
+                id: 111, pattern: "A + 被 / 讓 / 叫 + B + Động từ + Thành phần khác", level: "B1 • 時代華語 3",
+                meaning: "Câu bị động (Bị / Được)",
+                explanation: "A chịu tác động từ B. Trong văn nói Đài Loan rất hay dùng 被 (bèi).",
+                exTc: "我的腳踏車被小偷偷走了。", exPy: "Wǒ de jiǎotàchē bèi xiǎotōu tōuzǒu le.",
+                exVi: "Xe đạp của tôi bị kẻ trộm lấy mất rồi.", mastered: false
+            },
+            {
+                id: 112, pattern: "不但...，而且...", level: "B1 • 時代華語 3",
+                meaning: "Không những..., mà còn...",
+                explanation: "Biểu thị ý nghĩa tăng tiến. Nếu hai vế cùng chủ ngữ, 不但 đặt sau chủ ngữ.",
+                exTc: "這家餐廳不但菜好吃，而且價格也很合理。", exPy: "Zhè jiā cāntīng búdàn cài hǎochī, érqiě jiàgé yě hěn hélǐ.",
+                exVi: "Nhà hàng này không những món ăn ngon mà giá cả cũng rất hợp lý.", mastered: false
+            },
+            {
+                id: 113, pattern: "只要...，就...", level: "B1 • 時代華語 3",
+                meaning: "Chỉ cần..., thì...",
+                explanation: "Biểu thị điều kiện đủ: chỉ cần đáp ứng điều kiện ở vế trước thì sẽ đạt được kết quả ở vế sau.",
+                exTc: "只要每天堅持練習，你一定能考過 TOCFL B1。", exPy: "Zhǐyào měitiān jiānchí liànxí, nǐ yídìng néng kǎoguò TOCFL B1.",
+                exVi: "Chỉ cần kiên trì luyện tập mỗi ngày, bạn nhất định có thể thi đỗ TOCFL B1.", mastered: false
+            }
+        ];
+
+        // Dữ liệu các cột mốc Lộ trình A1 -> B1
+        const DEFAULT_ROADMAP = [
+            {
+                stage: "Giai đoạn 1: TOCFL A1 (Band A - Nhập môn)",
+                book: "Giáo trình: 時代華語 1 (Quyển 1 - 16 bài)",
+                badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
+                targetWords: "500 từ vựng Phồn thể",
+                desc: "Nắm vững phát âm Pinyin/Chú âm Đài Loan, giao tiếp sinh hoạt cơ bản, hỏi đường, mua sắm, gọi món và đặt câu đơn.",
+                tasks: [
+                    { id: "rm_1", text: "Hoàn thành Bài 1–4: Chào hỏi, giới thiệu bản thân, gia đình & nghề nghiệp", done: true },
+                    { id: "rm_2", text: "Hoàn thành Bài 5–8: Hỏi giờ, thời gian biểu, mua sắm & mặc cả giá tiền", done: false },
+                    { id: "rm_3", text: "Hoàn thành Bài 9–12: Gọi món ăn Đài Loan, hỏi đường & đi tàu điện MRT", done: false },
+                    { id: "rm_4", text: "Hoàn thành Bài 13–16: Thời tiết, khám bệnh, sở thích & du lịch ngắn ngày", done: false }
+                ]
+            },
+            {
+                stage: "Giai đoạn 2: TOCFL A2 (Band A - Sơ cấp)",
+                book: "Giáo trình: 時代華語 2 (Quyển 2 - 16 bài)",
+                badgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200",
+                targetWords: "1,000+ từ vựng Phồn thể",
+                desc: "Mở rộng sang câu phức (Vì... nên, Tuy... nhưng), bổ ngữ kết quả, bổ ngữ xu hướng và kể lại trải nghiệm cá nhân.",
+                tasks: [
+                    { id: "rm_5", text: "Nắm vững các liên từ nối câu: 因為...所以, 雖然...可是, 如果...就", done: false },
+                    { id: "rm_6", text: "Sử dụng thành thạo trợ từ động thái 了, 過, 著 trong hội thoại", done: false },
+                    { id: "rm_7", text: "Luyện nghe hiểu hội thoại dài 1–2 phút tốc độ tự nhiên của người Đài Loan", done: false }
+                ]
+            },
+            {
+                stage: "Giai đoạn 3: TOCFL B1 (Band B - Trung cấp)",
+                book: "Giáo trình: 時代華語 3 (Quyển 3 - Mục tiêu đầu ra)",
+                badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
+                targetWords: "2,500+ từ vựng Phồn thể",
+                desc: "Đủ năng lực xin học bổng/làm việc tại Đài Loan. Đọc hiểu đoạn văn báo chí ngắn, tranh luận quan điểm và dùng câu chữ 把 / 被.",
+                tasks: [
+                    { id: "rm_8", text: "Làm chủ câu chữ 把, câu bị động 被 và các cấu trúc nhấn mạnh 是...的", done: false },
+                    { id: "rm_9", text: "Tích lũy từ vựng chủ đề xã hội, môi trường, văn hóa và công việc", done: false },
+                    { id: "rm_10", text: "Giải trọn vẹn 3 bộ đề thi thử TOCFL Band B đạt trên ngưỡng B1", done: false }
+                ]
+            }
+        ];
+
+        // Hợp nhất dữ liệu lưu cục bộ với kho dữ liệu mặc định mới nhất (không làm mất tiến độ cũ)
+        function loadMergedData(storageKey, defaultArray) {
+            const saved = JSON.parse(localStorage.getItem(storageKey));
+            if (!saved || !Array.isArray(saved)) return [...defaultArray];
+            const savedMap = new Map(saved.map(item => [item.id, item]));
+            defaultArray.forEach(defItem => {
+                if (!savedMap.has(defItem.id)) {
+                    savedMap.set(defItem.id, defItem);
+                }
+            });
+            return Array.from(savedMap.values());
+        }
+
+        let vocabList = loadMergedData('tocfl_vocab_v2', DEFAULT_VOCAB);
+        let grammarList = loadMergedData('tocfl_grammar_v2', DEFAULT_GRAMMAR);
+        let roadmapData = JSON.parse(localStorage.getItem('tocfl_roadmap_v2')) || DEFAULT_ROADMAP;
+
+        function saveToLocalStorage() {
+            localStorage.setItem('tocfl_vocab_v2', JSON.stringify(vocabList));
+            localStorage.setItem('tocfl_grammar_v2', JSON.stringify(grammarList));
+            localStorage.setItem('tocfl_roadmap_v2', JSON.stringify(roadmapData));
+        }
+
+        let filteredVocab = [...vocabList];
+        let currentCardIndex = 0;
+        let isFlipped = false;
+        let isGrammarQuizMode = false;
+
+        window.onload = function() {
+            updateStats();
+            filterFlashcards();
+            renderGrammarList();
+            renderVocabTable();
+            renderRoadmap();
+        };
+
+        function switchTab(tabName) {
+            ['flashcards', 'grammar', 'vocab-list', 'roadmap'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabName) {
+                    view.classList.remove('hidden');
+                    btn.classList.add('bg-white', 'text-blue-700', 'shadow-sm');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    view.classList.add('hidden');
+                    btn.classList.remove('bg-white', 'text-blue-700', 'shadow-sm');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+        }
+
+        function filterFlashcards() {
+            const lesson = document.getElementById('fc-lesson-filter').value;
+            const status = document.getElementById('fc-status-filter').value;
+
+            filteredVocab = vocabList.filter(item => {
+                const matchLesson = (lesson === 'all') || (item.lesson === lesson);
+                const matchStatus = (status === 'all') || (item.status === status);
+                return matchLesson && matchStatus;
+            });
+
+            currentCardIndex = 0;
+            isFlipped = false;
+            document.getElementById('flashcard-inner').classList.remove('rotate-y-180');
+            renderCurrentCard();
+        }
+
+        function renderCurrentCard() {
+            const stage = document.getElementById('flashcard-stage');
+            const empty = document.getElementById('flashcard-empty');
+
+            if (filteredVocab.length === 0) {
+                stage.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            stage.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            const card = filteredVocab[currentCardIndex];
+            const showPinyin = document.getElementById('toggle-pinyin').checked;
+            const showZhuyin = document.getElementById('toggle-zhuyin').checked;
+
+            document.getElementById('fc-counter').textContent = `Thẻ ${currentCardIndex + 1} / ${filteredVocab.length}`;
+            document.getElementById('fc-front-lesson').textContent = card.lesson;
+            document.getElementById('fc-front-hanzi').textContent = card.hanzi;
+
+            const pyEl = document.getElementById('fc-front-pinyin');
+            const zyEl = document.getElementById('fc-front-zhuyin');
+            pyEl.textContent = card.pinyin;
+            zyEl.textContent = card.zhuyin || '';
+            pyEl.style.display = showPinyin ? 'block' : 'none';
+            zyEl.style.display = (showZhuyin && card.zhuyin) ? 'block' : 'none';
+
+            const badge = document.getElementById('fc-badge');
+            if (card.status === 'mastered') {
+                badge.textContent = 'Đã thuộc ✓';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold';
+            } else {
+                badge.textContent = 'Cần ôn tập';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold';
+            }
+
+            document.getElementById('fc-back-pos').textContent = card.pos || 'Từ vựng';
+            document.getElementById('fc-back-meaning').textContent = card.meaning;
+            document.getElementById('fc-back-ex-tc').textContent = card.exTc || card.hanzi;
+            document.getElementById('fc-back-ex-py').textContent = card.exPy || '';
+            document.getElementById('fc-back-ex-vi').textContent = card.exVi || '';
+            
+            const noteEl = document.getElementById('fc-back-note');
+            if (card.note) {
+                noteEl.textContent = `💡 ${card.note}`;
+                noteEl.classList.remove('hidden');
+            } else {
+                noteEl.classList.add('hidden');
+            }
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            document.getElementById('flashcard-inner').classList.toggle('rotate-y-180', isFlipped);
+        }
+
+        function nextCard() {
+            if (filteredVocab.length === 0) return;
+            isFlipped = false;
+            document.getElementById('flashcard-inner').classList.remove('rotate-y-180');
+            setTimeout(() => {
+                currentCardIndex = (currentCardIndex + 1) % filteredVocab.length;
+                renderCurrentCard();
+            }, 150);
+        }
+
+        function rateCard(newStatus) {
+            if (filteredVocab.length === 0) return;
+            const currentCard = filteredVocab[currentCardIndex];
+            const target = vocabList.find(v => v.id === currentCard.id);
+            if (target) target.status = newStatus;
+
+            saveToLocalStorage();
+            updateStats();
+            renderVocabTable();
+            showToast(newStatus === 'mastered' ? `Đã thuộc "${currentCard.hanzi}"!` : `Sẽ ôn lại "${currentCard.hanzi}".`);
+            nextCard();
+        }
+
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-TW';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakCurrentCard() {
+            if (filteredVocab.length > 0) speakText(filteredVocab[currentCardIndex].hanzi);
+        }
+
+        function speakExample() {
+            if (filteredVocab.length > 0) speakText(filteredVocab[currentCardIndex].exTc || filteredVocab[currentCardIndex].hanzi);
+        }
+
+        function toggleGrammarQuizMode() {
+            isGrammarQuizMode = !isGrammarQuizMode;
+            const btn = document.getElementById('btn-grammar-quiz');
+            btn.innerHTML = isGrammarQuizMode 
+                ? `<i class="fa-solid fa-eye"></i><span>Tự Kiểm Tra: BẬT</span>`
+                : `<i class="fa-solid fa-eye-slash"></i><span>Tự Kiểm Tra: TẮT</span>`;
+            btn.className = isGrammarQuizMode
+                ? 'px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 shadow-sm'
+                : 'px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs sm:text-sm font-semibold transition flex items-center gap-2';
+            renderGrammarList();
+        }
+
+        function toggleGrammarMastered(id) {
+            const item = grammarList.find(g => g.id === id);
+            if (item) {
+                item.mastered = !item.mastered;
+                saveToLocalStorage();
+                updateStats();
+                renderGrammarList();
+            }
+        }
+
+        function renderGrammarList() {
+            const levelFilter = document.getElementById('grammar-level-filter').value;
+            const container = document.getElementById('grammar-list');
+            const filteredGrammar = grammarList.filter(g => levelFilter === 'all' || g.level.includes(levelFilter));
+
+            container.innerHTML = filteredGrammar.map(g => {
+                const blurClass = isGrammarQuizMode ? 'blur-sm select-none cursor-pointer transition hover:blur-none' : '';
+                return `
+                <div class="bg-white rounded-2xl border ${g.mastered ? 'border-emerald-200' : 'border-slate-200'} p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">${g.level}</span>
+                            <button onclick="toggleGrammarMastered(${g.id})" class="text-xs font-semibold px-2.5 py-1 rounded-lg transition flex items-center gap-1 ${g.mastered ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-50 text-slate-500 border border-slate-200'}">
+                                <i class="fa-solid ${g.mastered ? 'fa-circle-check' : 'fa-circle'}"></i>
+                                <span>${g.mastered ? 'Đã nắm vững' : 'Đang luyện'}</span>
+                            </button>
+                        </div>
+                        <div onclick="this.classList.remove('blur-sm','select-none')" class="font-tc font-bold text-lg text-blue-700 bg-blue-50/70 px-3.5 py-2.5 rounded-xl border border-blue-100 mb-2 ${blurClass}">
+                            ${g.pattern}
+                        </div>
+                        <div class="font-semibold text-sm text-slate-800 mb-1">${g.meaning}</div>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-3">${g.explanation}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[10px] font-bold uppercase text-slate-400">Ví dụ</span>
+                            <button onclick="speakText('${g.exTc.replace(/'/g, "\\'")}')" class="text-xs text-blue-600 flex items-center gap-1">
+                                <i class="fa-solid fa-volume-high"></i> Nghe
+                            </button>
+                        </div>
+                        <p class="font-tc font-medium text-sm text-slate-900">${g.exTc}</p>
+                        <p class="text-xs text-slate-600 mt-1 italic">${g.exVi}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderVocabTable() {
+            const query = document.getElementById('search-vocab-input').value.toLowerCase().trim();
+            const levelFilter = document.getElementById('table-level-filter').value;
+            const tbody = document.getElementById('vocab-table-body');
+            const list = vocabList.filter(v => {
+                const matchText = v.hanzi.toLowerCase().includes(query) || v.pinyin.toLowerCase().includes(query) || v.meaning.toLowerCase().includes(query);
+                const matchLevel = levelFilter === 'all' || v.lesson.includes(levelFilter);
+                return matchText && matchLevel;
+            });
+
+            tbody.innerHTML = list.map(v => `
+        function renderRoadmap() {
+            const container = document.getElementById('roadmap-stages');
+            container.innerHTML = roadmapData.map((stage, sIdx) => {
+                const doneCount = stage.tasks.filter(t => t.done).length;
+                const pct = Math.round((doneCount / stage.tasks.length) * 100);
+                return `
+                <div class="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+                    <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-bold text-base sm:text-lg text-slate-900">${stage.stage}</h3>
+                                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full border ${stage.badgeColor}">${stage.targetWords}</span>
+                            </div>
+                            <div class="text-xs font-medium text-blue-600 mt-1">${stage.book}</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-bold text-slate-800">${pct}%</span>
+                            <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden mt-1">
+                                <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed">${stage.desc}</p>
+                    <div class="space-y-2.5">
+                        ${stage.tasks.map((task, tIdx) => `
+                            <label onclick="toggleRoadmapTask(${sIdx}, ${tIdx})" class="flex items-start gap-3 p-3 rounded-2xl border ${task.done ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/70'} cursor-pointer transition select-none">
+                                <input type="checkbox" ${task.done ? 'checked' : ''} class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 pointer-events-none">
+                                <span class="text-xs sm:text-sm ${task.done ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}">${task.text}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleRoadmapTask(stageIdx, taskIdx) {
+            roadmapData[stageIdx].tasks[taskIdx].done = !roadmapData[stageIdx].tasks[taskIdx].done;
+            saveToLocalStorage();
+            renderRoadmap();
+            updateStats();
+        }
+
+        function updateStats() {
+            const vocabMastered = vocabList.filter(v => v.status === 'mastered').length;
+            const grammarMastered = grammarList.filter(g => g.mastered).length;
+            const allTasks = roadmapData.flatMap(s => s.tasks);
+            const roadmapDone = allTasks.filter(t => t.done).length;
+
+            document.getElementById('stat-vocab-mastered').textContent = vocabMastered;
+            document.getElementById('stat-vocab-total').textContent = vocabList.length;
+            document.getElementById('stat-grammar-mastered').textContent = grammarMastered;
+            document.getElementById('stat-grammar-total').textContent = grammarList.length;
+
+            const score = vocabMastered + grammarMastered * 2 + roadmapDone * 3;
+            const maxScore = vocabList.length + grammarList.length * 2 + allTasks.length * 3;
+            const totalPct = Math.min(100, Math.round((score / maxScore) * 100));
+            document.getElementById('overall-percent').textContent = `${totalPct}%`;
+            document.getElementById('overall-progress-bar').style.width = `${totalPct}%`;
+        }
+
+        function openAddModal(type) {
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modal-title').textContent = type === 'vocab' ? 'Thêm Từ Vựng Mới' : 'Thêm Cấu Trúc Ngữ Pháp';
+            document.getElementById('form-add-vocab').classList.toggle('hidden', type !== 'vocab');
+            document.getElementById('form-add-grammar').classList.toggle('hidden', type === 'vocab');
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleAddVocab(e) {
+            e.preventDefault();
+            const newVocab = {
+                id: Date.now(),
+                hanzi: document.getElementById('in-v-hanzi').value.trim(),
+                pinyin: document.getElementById('in-v-pinyin').value.trim(),
+                zhuyin: document.getElementById('in-v-zhuyin').value.trim(),
+                pos: 'Từ vựng',
+                meaning: document.getElementById('in-v-meaning').value.trim(),
+                lesson: document.getElementById('in-v-lesson').value,
+                exTc: document.getElementById('in-v-example').value.trim(),
+                exPy: '', exVi: '',
+                note: document.getElementById('in-v-note').value.trim(),
+                status: 'learning'
+            };
+            vocabList.unshift(newVocab);
+            saveToLocalStorage();
+            e.target.reset();
+            closeAddModal();
+            updateStats();
+            filterFlashcards();
+            renderVocabTable();
+            showToast(`Đã lưu "${newVocab.hanzi}"!`);
+        }
+
+        function handleAddGrammar(e) {
+            e.preventDefault();
+            const newGrammar = {
+                id: Date.now(),
+                pattern: document.getElementById('in-g-pattern').value.trim(),
+                level: document.getElementById('in-g-level').value.trim() || '時代華語 1',
+                meaning: document.getElementById('in-g-meaning').value.trim(),
+                explanation: document.getElementById('in-g-explanation').value.trim(),
+                exTc: document.getElementById('in-g-ex-tc').value.trim(),
+                exPy: '',
+                exVi: document.getElementById('in-g-ex-vi').value.trim(),
+                mastered: false
+            };
+            grammarList.unshift(newGrammar);
+            saveToLocalStorage();
+            e.target.reset();
+            closeAddModal();
+            updateStats();
+            renderGrammarList();
+            switchTab('grammar');
+            showToast('Đã lưu cấu trúc ngữ pháp!');
+        }
+
+        // Sao lưu & Khôi phục dữ liệu JSON
+        function openBackupModal() {
+            const modal = document.getElementById('backup-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBackupModal() {
+            const modal = document.getElementById('backup-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function exportData() {
+            const data = { vocabList, grammarList, exportedAt: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tocfl-study-backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            showToast('Đã tải file sao lưu!');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.vocabList && data.grammarList) {
+                        vocabList = data.vocabList;
+                        grammarList = data.grammarList;
+                        saveToLocalStorage();
+                        updateStats();
+                        filterFlashcards();
+                        renderGrammarList();
+                        renderVocabTable();
+                        closeBackupModal();
+                        showToast('Khôi phục dữ liệu thành công!');
+                    }
+                } catch (err) {
+                    showToast('File sao lưu không hợp lệ.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-opacity duration-300';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
+```
+
+```markdown:Hướng dẫn Đưa Website lên Mạng & Cài đặt App trên Điện thoại:huong_dan_trien_khai_app.md
+# Hướng Dẫn Biến TOCFL Study Hub Thành Website Riêng & App Trên Điện Thoại
+
+Bạn không cần mua tên miền hay máy chủ tốn kém. Chỉ mất **3 phút** với các bước miễn phí dưới đây để bạn có một đường link riêng truy cập mọi lúc, mọi nơi và cài trực tiếp lên màn hình chính điện thoại như một App thực thụ.
+
+---
+
+## Bước 1: Tải file mã nguồn về máy
+1. Mở thẻ code **`tocfl_study_hub.html`** ở khung bên cạnh (hoặc bấm nút Download/Copy toàn bộ nội dung).
+2. Lưu file về máy tính hoặc điện thoại với đúng tên là: **`index.html`** *(Lưu ý: đặt tên là `index.html` để các dịch vụ web nhận diện tự động làm trang chủ).*
+
+---
+
+## Bước 2: Đưa lên mạng miễn phí (Có ngay đường link cá nhân)
+
+Bạn có thể chọn **1 trong 2 cách** siêu nhanh dưới đây (không cần biết lập trình):
+
+### Cách 1: Dùng Netlify Drop (Nhanh nhất - Kéo thả trong 30 giây)
+1. Truy cập trang web: **[app.netlify.com/drop](https://app.netlify.com/drop)** (đăng ký miễn phí bằng tài khoản Google hoặc GitHub).
+2. Tạo một thư mục mới trên máy tính tên là `tocfl-app`, bỏ file **`index.html`** vừa lưu vào trong thư mục đó.
+3. Kéo thả cả thư mục `tocfl-app` vào khung tròn trên trang Netlify Drop.
+4. Ngay lập tức, Netlify sẽ cấp cho bạn một đường link dạng `https://ten-cua-ban.netlify.app`. Bạn có thể đổi tên link này trong phần **Site settings → Change site name** (ví dụ: `tocfl-cua-toi.netlify.app`).
+
+### Cách 2: Dùng GitHub Pages (Lưu trữ vĩnh viễn)
+1. Đăng nhập **[github.com](https://github.com)** → Bấm dấu **`+`** góc trên bên phải → Chọn **New repository**.
+2. Đặt tên repository (ví dụ: `tocfl-study`), chọn **Public** → Bấm **Create repository**.
+3. Bấm **uploading an existing file**, tải file **`index.html`** lên và bấm **Commit changes**.
+4. Vào mục **Settings** của repository đó → Chọn **Pages** ở cột bên trái → Ở mục *Branch*, chọn **`main`** rồi bấm **Save**. Sau khoảng 1 phút, trang web của bạn sẽ hoạt động tại địa chỉ `https://ten-tai-khoan.github.io/tocfl-study/`.
+
+---
+
+## Bước 3: Cài đặt thành App trên màn hình chính điện thoại
+
+Sau khi đã có đường link website ở Bước 2, bạn mở link đó trên điện thoại và làm theo hướng dẫn sau để biến nó thành một ứng dụng độc lập (mở toàn màn hình, không có thanh địa chỉ trình duyệt):
+
+* **Trên iPhone / iPad (Dùng trình duyệt Safari):**
+  1. Mở đường link website bằng **Safari**.
+  2. Bấm vào biểu tượng **Chia sẻ (Share)** (hình vuông có mũi tên hướng lên ở thanh dưới cùng).
+  3. Cuộn xuống và chọn **"Thêm vào MH chính" (Add to Home Screen)**.
+  4. Đặt tên là **TOCFL Hub** và bấm **Thêm**.
+
+* **Trên điện thoại Android (Dùng trình duyệt Chrome):**
+  1. Mở đường link website bằng **Chrome**.
+  2. Bấm vào biểu tượng **3 chấm dọc** ở góc trên bên phải.
+  3. Chọn **"Thêm vào màn hình chính" (Add to Home screen)** hoặc **"Cài đặt ứng dụng"**.
+  4. Xác nhận **Thêm** để biểu tượng App xuất hiện ngoài màn hình.
+
+---
+
+## Mẹo sử dụng & Đồng bộ dữ liệu
+* **Tự động lưu:** Mọi từ vựng mới, cấu trúc ngữ pháp bạn thêm hoặc trạng thái *"Đã thuộc"* đều được tự động lưu ngay trên điện thoại của bạn (không bị mất khi tắt App).
+* **Chuyển đổi thiết bị:** Khi muốn chuyển dữ liệu học từ máy tính sang điện thoại (hoặc ngược lại), bạn chỉ cần bấm vào biểu tượng **Bánh răng (⚙️)** góc trên bên phải App → Chọn **Tải file sao lưu**, sau đó mở App trên thiết bị kia và chọn **Khôi phục file**.
+```
+
+Tôi đã cập nhật tính năng **tự động lưu tiến độ** trên thiết bị và **sao lưu/khôi phục dữ liệu** vào ứng dụng **TOCFL Study Hub**, đồng thời tạo file hướng dẫn từng bước để bạn đưa lên mạng miễn phí và cài ra màn hình chính điện thoại như một App riêng. Bạn muốn tôi bổ sung sẵn danh sách từ vựng và ngữ pháp của các bài tiếp theo trong **時代華語 1** vào ứng dụng không?
