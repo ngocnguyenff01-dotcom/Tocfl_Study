@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TOCFL Study Hub | 時代華語 1 → B1</title>
+    <!-- Cấu hình hiển thị như App trên điện thoại (iOS & Android) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TOCFL Hub">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter cho tiếng Việt & Noto Sans TC cho chữ Phồn thể Đài Loan -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tc: ['"Noto Sans TC"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Header & TOCFL B1 Progress Tracker -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 sm:py-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <!-- Logo & Tiêu đề -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-tc font-bold text-xl shadow-md">
+                        華
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-bold text-lg sm:text-xl text-slate-900">TOCFL Study Hub</h1>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                時代華語 1
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500">Tự động lưu trên máy • <strong class="text-blue-600">A1</strong> → <strong class="text-emerald-600">B1</strong></p>
+                    </div>
+                </div>
+
+                <!-- Nút Thao tác nhanh -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openAddModal('vocab')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Từ vựng</span>
+                    </button>
+                    <button onclick="openAddModal('grammar')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Ngữ pháp</span>
+                    </button>
+                    <button onclick="openBackupModal()" title="Sao lưu & Cài đặt App" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex items-center justify-center transition">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Thanh Tiến Độ Lộ Trình TOCFL A1 -> B1 -->
+            <div class="mt-3 pt-3 border-t border-slate-100">
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-medium text-slate-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-flag-checkered text-blue-600"></i>
+                        Tiến độ tích lũy hướng tới TOCFL B1
+                    </span>
+                    <span id="overall-percent" class="font-bold text-blue-700">12%</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex relative">
+                    <div id="overall-progress-bar" class="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 12%;"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-medium">
+                    <span class="text-blue-600 font-semibold">● 時代華語 1 (A1)</span>
+                    <span>時代華語 2 (A2)</span>
+                    <span class="text-emerald-600 font-semibold">時代華語 3 (TOCFL B1)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-5">
+        
+        <!-- Thống kê nhanh -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Từ vựng đã thuộc</span>
+                    <i class="fa-solid fa-layer-group text-blue-500"></i>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-slate-800">
+                    <span id="stat-vocab-mastered">0</span><span class="text-sm font-normal text-slate-400">/<span id="stat-vocab-total">0</span></span>
+                </div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Ngữ pháp nắm vững</span>
+                    <i class="fa-solid fa-puzzle-piece text-emerald-500"></i>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-slate-800">
+                    <span id="stat-grammar-mastered">0</span><span class="text-sm font-normal text-slate-400">/<span id="stat-grammar-total">0</span></span>
+                </div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Giáo trình</span>
+                    <i class="fa-solid fa-book-open text-amber-500"></i>
+                </div>
+                <div class="text-base sm:text-lg font-bold text-slate-800 truncate">時代華語 1</div>
+                <div class="text-[11px] text-slate-400">Chữ Phồn thể</div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="text-xs text-slate-500 mb-1 flex items-center justify-between">
+                    <span>Lưu trữ cục bộ</span>
+                    <i class="fa-solid fa-cloud-check text-emerald-500"></i>
+                </div>
+                <div class="text-sm sm:text-base font-bold text-emerald-600 mt-1">Đã kích hoạt</div>
+                <div class="text-[11px] text-slate-400">Tự động lưu tiến độ</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex items-center gap-2 bg-slate-200/70 p-1.5 rounded-2xl mb-6 overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('flashcards')" id="tab-btn-flashcards" class="flex-1 min-w-[115px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 bg-white text-blue-700 shadow-sm">
+                <i class="fa-solid fa-clone"></i>
+                <span>Flashcard</span>
+            </button>
+            <button onclick="switchTab('grammar')" id="tab-btn-grammar" class="flex-1 min-w-[115px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-sitemap"></i>
+                <span>Ngữ Pháp</span>
+            </button>
+            <button onclick="switchTab('vocab-list')" id="tab-btn-vocab-list" class="flex-1 min-w-[115px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Sổ Tay</span>
+            </button>
+            <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="flex-1 min-w-[125px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-route"></i>
+                <span>Lộ Trình B1</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: FLASHCARD -->
+        <section id="view-flashcards" class="space-y-5">
+            <div class="bg-white p-3.5 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <select id="fc-lesson-filter" onchange="filterFlashcards()" class="text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Tất cả lộ trình (A1 → B1)</option>
+                        <optgroup label="時代華語 1 (TOCFL A1)">
+                            <option value="A1 - Bài 1-4">A1 • Bài 1–4: Chào hỏi & Gia đình</option>
+                            <option value="A1 - Bài 5-8">A1 • Bài 5–8: Thời gian & Mua sắm</option>
+                            <option value="A1 - Bài 9-12">A1 • Bài 9–12: Ăn uống & Giao thông</option>
+                            <option value="A1 - Bài 13-16">A1 • Bài 13–16: Thời tiết & Sinh hoạt</option>
+                        </optgroup>
+                        <optgroup label="Nâng cao (TOCFL A2 → B1)">
+                            <option value="A2 - 時代華語 2">A2 • 時代華語 2 (Sơ cấp)</option>
+                            <option value="B1 - 時代華語 3">B1 • 時代華語 3 (Trung cấp)</option>
+                        </optgroup>
+                        <option value="Cá nhân">Từ vựng tự thêm</option>
+                    </select>
+
+                    <select id="fc-status-filter" onchange="filterFlashcards()" class="text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="learning">Cần ôn tập</option>
+                        <option value="mastered">Đã thuộc</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3 text-xs font-medium">
+                    <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                        <input type="checkbox" id="toggle-pinyin" checked onchange="renderCurrentCard()" class="rounded text-blue-600">
+                        <span>Pinyin</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                        <input type="checkbox" id="toggle-zhuyin" checked onchange="renderCurrentCard()" class="rounded text-blue-600">
+                        <span>Chú âm (ㄅㄆㄇ)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="flashcard-stage" class="max-w-xl mx-auto">
+                <div class="flex items-center justify-between text-xs text-slate-500 mb-2 px-1">
+                    <span id="fc-counter">Thẻ 1 / 10</span>
+                    <span id="fc-badge" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">Đang học</span>
+                </div>
+
+                <div class="perspective-1000 w-full h-80 sm:h-96 cursor-pointer select-none" onclick="flipCard()">
+                    <div id="flashcard-inner" class="relative w-full h-full transform-style-3d">
+                        <!-- MẶT TRƯỚC -->
+                        <div class="absolute inset-0 backface-hidden bg-white rounded-3xl border-2 border-slate-200/90 shadow-lg p-6 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span id="fc-front-lesson" class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700">Bài 1</span>
+                                <button type="button" onclick="event.stopPropagation(); speakCurrentCard()" class="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition">
+                                    <i class="fa-solid fa-volume-high text-base"></i>
+                                </button>
+                            </div>
+
+                            <div class="text-center my-auto">
+                                <div id="fc-front-hanzi" class="font-tc text-5xl sm:text-6xl font-bold text-slate-900 tracking-wider mb-3">
+                                    臺灣
+                                </div>
+                                <div id="fc-front-phonetic" class="space-y-1">
+                                    <div id="fc-front-pinyin" class="text-lg sm:text-xl font-medium text-blue-600">Táiwān</div>
+                                    <div id="fc-front-zhuyin" class="font-tc text-sm text-slate-400">ㄊㄞˊ ㄨㄢ</div>
+                                </div>
+                            </div>
+
+                            <div class="text-center text-xs text-slate-400 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-rotate"></i>
+                                <span>Chạm vào thẻ để xem nghĩa</span>
+                            </div>
+                        </div>
+
+                        <!-- MẶT SAU -->
+                        <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl shadow-xl p-6 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span id="fc-back-pos" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-white/10 text-blue-300">Danh từ</span>
+                                <button type="button" onclick="event.stopPropagation(); speakCurrentCard()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                                    <i class="fa-solid fa-volume-high text-sm"></i>
+                                </button>
+                            </div>
+
+                            <div class="text-center my-auto space-y-3">
+                                <div id="fc-back-meaning" class="text-2xl sm:text-3xl font-bold text-emerald-400">
+                                    Đài Loan
+                                </div>
+                                
+                                <div class="bg-white/10 rounded-2xl p-3.5 text-left border border-white/10">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Ví dụ</span>
+                                        <button type="button" onclick="event.stopPropagation(); speakExample()" class="text-xs text-blue-300 hover:text-blue-200 flex items-center gap-1">
+                                            <i class="fa-solid fa-play"></i> Nghe câu
+                                        </button>
+                                    </div>
+                                    <p id="fc-back-ex-tc" class="font-tc text-base sm:text-lg font-medium text-white">歡迎你來臺灣！</p>
+                                    <p id="fc-back-ex-py" class="text-xs text-blue-300 mt-0.5">Huānyíng nǐ lái Táiwān!</p>
+                                    <p id="fc-back-ex-vi" class="text-xs text-slate-300 mt-1 italic">Chào mừng bạn đến Đài Loan!</p>
+                                </div>
+
+                                <div id="fc-back-note" class="text-xs text-amber-300/90 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20">
+                                    💡 Mẹo nhớ
+                                </div>
+                            </div>
+
+                            <div class="text-center text-[11px] text-slate-400">
+                                Đánh giá mức độ ghi nhớ bên dưới
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Điều hướng -->
+                <div class="mt-5 grid grid-cols-3 gap-2.5">
+                    <button onclick="rateCard('learning')" class="py-3 px-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs sm:text-sm transition flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                        <span>Chưa nhớ</span>
+                    </button>
+                    <button onclick="nextCard()" class="py-3 px-2 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs sm:text-sm transition flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-arrow-right text-base"></i>
+                        <span>Thẻ tiếp</span>
+                    </button>
+                    <button onclick="rateCard('mastered')" class="py-3 px-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-xs sm:text-sm transition flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-check text-base"></i>
+                        <span>Đã thuộc</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="flashcard-empty" class="hidden bg-white rounded-3xl border border-slate-200 p-10 text-center">
+                <h3 class="font-bold text-slate-800">Không tìm thấy thẻ nào</h3>
+                <p class="text-sm text-slate-500 mt-1">Thử đổi bộ lọc hoặc bấm nút "+ Từ vựng" phía trên.</p>
+            </div>
+        </section>
+
+        <!-- TAB 2: NGỮ PHÁP -->
+        <section id="view-grammar" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="font-bold text-slate-800 text-base">Cấu Trúc Ngữ P
